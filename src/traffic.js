@@ -122,7 +122,12 @@ export class Traffic {
           if (L.dir > 0) { stop = Math.ceil((front + 0.01) / period) * period - 1.5; const d = stop - front; if (d > 0 && d < 18) target = Math.min(target, Math.max(0, (d - 0.5) * 1.1)); }
           else { stop = Math.floor((front - 0.01) / period) * period + crossW + 1.5; const d = front - stop; if (d > 0 && d < 18) target = Math.min(target, Math.max(0, (d - 0.5) * 1.1)); }
         }
-        c.v += Math.max(-12 * dt, Math.min(4 * dt, target - c.v));
+        if (focus.y < 1 && Math.abs((L.axis === 'z' ? focus.x : focus.z) - L.fixed) < 2.2) {
+          const w = L.dir > 0 ? c.s : L.len - c.s, pw = L.axis === 'z' ? focus.z : focus.x;
+          const ahead = (pw - w) * L.dir - T.len / 2;
+          if (ahead > -1 && ahead < 14) target = Math.min(target, Math.max(0, (ahead - 2) * 1.5));
+        }
+        c.v += Math.max(-14 * dt, Math.min(4 * dt, target - c.v));
         c.s = (c.s + c.v * dt) % L.len;
       }
     }

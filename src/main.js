@@ -61,6 +61,7 @@ const traffic = new Traffic(scene, quality);
 const player = new Player(scene, city);
 const camera = new THREE.PerspectiveCamera(68, innerWidth / innerHeight, 0.3, 4000);
 const hud = new Hud(city, traffic);
+if (Q.has('eventnow')) hud.evCool = 0.05;
 
 const cam = { yaw: 0, pitch: 0.22, dist: 5.6, pos: new THREE.Vector3(), look: new THREE.Vector3(), lastLook: 0, fov: 68 };
 // spawn on a rooftop in Spire Heights facing north
@@ -144,7 +145,8 @@ function updateCamera(dt) {
     const vy = Math.atan2(player.v.x, player.v.z); let d = vy - cam.yaw; d = Math.atan2(Math.sin(d), Math.cos(d));
     cam.yaw += d * Math.min(1, dt * (auto ? 1.6 : 0.9));
   }
-  const dist = cam.dist + Math.min(sp, 50) * 0.035 + (player.state === 'swing' ? 0.8 : 0);
+  const portrait = camera.aspect < 1;
+  const dist = (cam.dist + Math.min(sp, 50) * 0.035 + (player.state === 'swing' ? 0.8 : 0)) * (portrait ? 1.45 : 1);
   const target = tv.copy(player.p); target.y += 1.7;
   const cp = Math.cos(cam.pitch);
   const desired = tv2.set(-Math.sin(cam.yaw) * cp * dist, Math.sin(cam.pitch) * dist + 0.6, -Math.cos(cam.yaw) * cp * dist).add(target);
@@ -159,7 +161,7 @@ function updateCamera(dt) {
   const off = cam.pos.clone().sub(target); if (off.length() > dist * 1.6) cam.pos.copy(target).addScaledVector(off.normalize(), dist * 1.6);
   cam.look.lerp(target, 1 - Math.exp(-dt * 18));
   camera.position.copy(cam.pos); camera.lookAt(cam.look);
-  const fov = 66 + Math.min(Math.max(sp - 10, 0), 45) * 0.45;
+  const fov = (camera.aspect < 1 ? 78 : 66) + Math.min(Math.max(sp - 10, 0), 45) * 0.45;
   cam.fov += (fov - cam.fov) * Math.min(1, dt * 3);
   camera.fov = cam.fov; camera.updateProjectionMatrix();
 }
@@ -193,7 +195,7 @@ function frame(now) {
   sky.position.copy(camera.position);
   hud.update(dt, player, cam, camera, inp, fps);
   inp.noAnchor = false;
-  renderer.render(scene, camera);
+  if (!Q.has('norender')) renderer.render(scene, camera);
   fpsAcc += dt; fpsN++; if (fpsAcc > 0.5) { fps = fpsN / fpsAcc; fpsAcc = 0; fpsN = 0; }
 }
 requestAnimationFrame(frame);

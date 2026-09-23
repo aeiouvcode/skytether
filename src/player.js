@@ -153,7 +153,9 @@ export class Player {
       if (p.y - gh < 0.8) p.y = gh; else this.state = 'air';
     }
     // world bounds
-    p.x = Math.max(-5, Math.min(city.W + 5, p.x)); p.z = Math.max(-5, Math.min(city.D + 5, p.z));
+    if (p.x < -5) { p.x = -5; if (v.x < 0) v.x = 0; } else if (p.x > city.W + 5) { p.x = city.W + 5; if (v.x > 0) v.x = 0; }
+    if (p.z < -5) { p.z = -5; if (v.z < 0) v.z = 0; } else if (p.z > city.D + 5) { p.z = city.D + 5; if (v.z > 0) v.z = 0; }
+    if (!(p.y > -10)) { p.y = 0; v.set(0, 0, 0); this.state = 'ground'; }
   }
 
   collide(dt, wish, wl, inp) {

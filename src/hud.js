@@ -119,9 +119,9 @@ export class Hud {
       const sp = e.pos.clone(); sp.y += 5; sp.project(camera);
       const behind = sp.z > 1;
       let x = (sp.x * 0.5 + 0.5) * innerWidth, y = (-sp.y * 0.5 + 0.5) * innerHeight;
-      if (behind) { x = innerWidth - x; y = innerHeight - 40; }
+      if (behind) { x = innerWidth - x; y = innerHeight - 120; }
       const m = 40; const clamped = behind || x < m || x > innerWidth - m || y < m || y > innerHeight - m;
-      x = Math.max(m, Math.min(innerWidth - m, x)); y = Math.max(m + 30, Math.min(innerHeight - m, y));
+      x = Math.max(m, Math.min(innerWidth - m, x)); y = Math.max(m + 60, Math.min(innerHeight - 110, y)); x = Math.max(m + 150, Math.min(innerWidth - 210, x));
       this.el.marker.style.transform = `translate(${x}px,${y}px)`; this.el.marker.classList.toggle('edge', clamped); this.el.marker.style.display = 'block';
       this.el.mdist.textContent = Math.round(dist) + 'm';
     }
