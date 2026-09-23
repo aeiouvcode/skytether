@@ -22,10 +22,10 @@ html,body{width:100%;height:100%;overflow:hidden;background:#0b1117;font-family:
 #mapWrap{right:18px;bottom:18px;width:176px}
 #minimap{width:176px;height:176px;border-radius:10px;border:2px solid rgba(25,224,200,.55);box-shadow:0 4px 18px rgba(0,0,0,.4);display:block}
 #dname{margin-top:6px;text-align:right;font-size:11px;letter-spacing:.2em;font-weight:700;color:#bfeee7;text-shadow:0 1px 3px #000}
-#banner{top:30%;left:0;right:0;text-align:center;opacity:0;transition:opacity .5s}
+#banner{top:14%;left:0;right:0;text-align:center;opacity:0;transition:opacity .5s}
 #banner.on{opacity:1}
 #banner .k{font-size:12px;letter-spacing:.5em;color:#19e0c8;font-weight:700}
-#bannerName{font-size:44px;font-weight:900;letter-spacing:.18em;text-shadow:0 3px 16px rgba(0,0,0,.55);margin-top:4px}
+#bannerName{font-size:36px;font-weight:900;letter-spacing:.18em;text-shadow:0 3px 16px rgba(0,0,0,.55);margin-top:4px}
 #banner .bar{height:2px;width:0;margin:10px auto 0;background:linear-gradient(90deg,transparent,#19e0c8,transparent);transition:width 1.2s .2s}
 #banner.on .bar{width:420px}
 #toast{bottom:22%;left:50%;transform:translate(-50%,10px);padding:8px 18px;background:rgba(9,16,22,.78);border:1px solid rgba(25,224,200,.5);font-size:13px;font-weight:800;letter-spacing:.14em;opacity:0;transition:.3s}
@@ -66,3 +66,4 @@ body.mobile #evPanel{top:10px;left:10px;transform:scale(.85);transform-origin:le
 body.mobile #compass{top:6px;width:200px}
 #bigmap{display:none;position:fixed;inset:8% 20%;z-index:9;background:rgba(9,16,22,.9);border:2px solid #19e0c8}
 #bigmap canvas{width:100%;height:100%}
+body:not(.mobile) .touch{display:none!important}

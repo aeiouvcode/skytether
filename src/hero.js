@@ -3,12 +3,12 @@ import * as THREE from 'three';
 
 function suitTexture() {
   const c = document.createElement('canvas'); c.width = 256; c.height = 256; const g = c.getContext('2d');
-  g.fillStyle = '#232a36'; g.fillRect(0, 0, 256, 256);
+  g.fillStyle = '#2f3b4f'; g.fillRect(0, 0, 256, 256);
   // hex weave
   g.strokeStyle = 'rgba(255,255,255,0.06)'; g.lineWidth = 1;
   for (let y = 0; y < 256; y += 8) for (let x = (y / 8 % 2) * 6; x < 256; x += 12) { g.beginPath(); g.arc(x, y, 3.5, 0, 6.28); g.stroke(); }
   // teal piping lines
-  g.strokeStyle = '#19e0c8'; g.lineWidth = 3;
+  g.strokeStyle = '#19e0c8'; g.lineWidth = 7;
   g.beginPath(); g.moveTo(0, 40); g.lineTo(256, 40); g.stroke();
   g.beginPath(); g.moveTo(0, 200); g.lineTo(256, 200); g.stroke();
   const t = new THREE.CanvasTexture(c); t.wrapS = t.wrapT = THREE.RepeatWrapping; t.colorSpace = THREE.SRGBColorSpace; return t;
@@ -18,7 +18,7 @@ export function buildHero() {
   const root = new THREE.Group();
   const suitT = suitTexture();
   const suit = new THREE.MeshStandardMaterial({ map: suitT, roughness: 0.55, metalness: 0.15 });
-  const plate = new THREE.MeshStandardMaterial({ color: 0x39424f, roughness: 0.35, metalness: 0.5 });
+  const plate = new THREE.MeshStandardMaterial({ color: 0x6b7888, roughness: 0.35, metalness: 0.45 });
   const teal = new THREE.MeshStandardMaterial({ color: 0x19e0c8, emissive: 0x0fb8a4, emissiveIntensity: 1.2, roughness: 0.3 });
   const amber = new THREE.MeshStandardMaterial({ color: 0xff8a1f, emissive: 0xc2540a, emissiveIntensity: 0.6, roughness: 0.4 });
   const visor = new THREE.MeshStandardMaterial({ color: 0x0d1418, emissive: 0x19e0c8, emissiveIntensity: 0.35, roughness: 0.05, metalness: 0.9 });
@@ -44,7 +44,7 @@ export function buildHero() {
   const limbs = {};
   const mkArm = (side) => {
     const sh = new THREE.Group(); sh.position.set(side * 0.3, 0.5, 0); torso.add(sh);
-    add(sh, new THREE.SphereGeometry(0.1, 10, 8), plate, 0, 0, 0);
+    add(sh, new THREE.SphereGeometry(0.11, 10, 8), amber, 0, 0, 0);
     add(sh, new THREE.CapsuleGeometry(0.075, 0.22, 4, 8), suit, 0, -0.17, 0);
     const el = new THREE.Group(); el.position.y = -0.34; sh.add(el);
     add(el, new THREE.CapsuleGeometry(0.065, 0.22, 4, 8), suit, 0, -0.15, 0);

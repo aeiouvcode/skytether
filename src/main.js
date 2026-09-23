@@ -62,7 +62,7 @@ const player = new Player(scene, city);
 const camera = new THREE.PerspectiveCamera(68, innerWidth / innerHeight, 0.3, 4000);
 const hud = new Hud(city, traffic);
 
-const cam = { yaw: 0, pitch: 0.22, dist: 6.5, pos: new THREE.Vector3(), look: new THREE.Vector3(), lastLook: 0, fov: 68 };
+const cam = { yaw: 0, pitch: 0.22, dist: 5.6, pos: new THREE.Vector3(), look: new THREE.Vector3(), lastLook: 0, fov: 68 };
 // spawn on a rooftop in Spire Heights facing north
 {
   const lot = city.lots.filter(l => l.z0 > 13 * CELL_Z && l.z0 < 14 * CELL_Z && l.h > 40 && l.h < 90)[0] || city.lots[0];
@@ -71,6 +71,7 @@ const cam = { yaw: 0, pitch: 0.22, dist: 6.5, pos: new THREE.Vector3(), look: ne
   if (sp === 'ground') player.spawn(3 * CELL_X + AVE_W - 3, 0, 12 * CELL_Z + 20);
   if (sp === 'park') { player.spawn(PARK.x0 + 30, 0, PARK.z0 + 60); }
   if (sp === 'avenue') player.spawn(5 * CELL_X + 10, 0, 8 * CELL_Z + 30);
+  if (sp === 'aveair') { player.spawn(5 * CELL_X + 10, 48, 13 * CELL_Z); player.v.set(0, 2, 26); }
   if (Q.has('yaw')) cam.yaw = +Q.get('yaw');
 }
 cam.pos.copy(player.p).add(new THREE.Vector3(-Math.sin(cam.yaw) * 7, 3, -Math.cos(cam.yaw) * 7));
@@ -143,7 +144,7 @@ function updateCamera(dt) {
     const vy = Math.atan2(player.v.x, player.v.z); let d = vy - cam.yaw; d = Math.atan2(Math.sin(d), Math.cos(d));
     cam.yaw += d * Math.min(1, dt * (auto ? 1.6 : 0.9));
   }
-  const dist = cam.dist + Math.min(sp, 50) * 0.05 + (player.state === 'swing' ? 1.5 : 0);
+  const dist = cam.dist + Math.min(sp, 50) * 0.035 + (player.state === 'swing' ? 0.8 : 0);
   const target = tv.copy(player.p); target.y += 1.7;
   const cp = Math.cos(cam.pitch);
   const desired = tv2.set(-Math.sin(cam.yaw) * cp * dist, Math.sin(cam.pitch) * dist + 0.6, -Math.cos(cam.yaw) * cp * dist).add(target);

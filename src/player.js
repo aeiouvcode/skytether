@@ -38,7 +38,7 @@ export class Player {
       const hit = this.city.raycast(o, d, 120);
       if (!hit || hit.t < 7) continue;
       if (hit.point.y < this.p.y + 6) continue;
-      const score = -Math.abs(yo) * 8 - Math.abs(el - 52) * 0.25 - Math.abs(hit.t - 38) * 0.15 + (hit.normal.y > 0.5 ? -15 : 0);
+      const score = -Math.abs(Math.abs(yo) - 0.45) * 7 - Math.abs(el - 52) * 0.25 - Math.abs(hit.t - 40) * 0.15 + (hit.normal.y > 0.5 ? -15 : 0) + (yo === 0 && hit.t < 30 ? -10 : 0);
       if (!best || score > best.score) best = { score, point: hit.point.clone(), normal: hit.normal.clone() };
     }
     return best;

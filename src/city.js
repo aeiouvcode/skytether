@@ -9,7 +9,7 @@ export const PARK = { i: 3, j0: 18, j1: 22, x0: 3 * CELL_X + AVE_W, x1: 4 * CELL
 export const DISTRICTS = [
   { name: 'HARBOR POINT', j0: 0, j1: 5, pal: ['limeGrey', 'limeCream', 'brickBrown', 'glassDark', 'limeWhite'], fl: [6, 22], tall: 0.12 },
   { name: 'FOUNDRY ROW', j0: 6, j1: 11, pal: ['brickRed', 'brickBrown', 'brickDark', 'brickRed', 'limeCream'], fl: [5, 14], tall: 0.03 },
-  { name: 'SPIRE HEIGHTS', j0: 12, j1: 17, pal: ['glassBlue', 'glassTeal', 'glassDark', 'limeGrey', 'limeWhite', 'glassBlue'], fl: [14, 40], tall: 0.35 },
+  { name: 'SPIRE HEIGHTS', j0: 12, j1: 17, pal: ['glassBlue', 'limeGrey', 'limeWhite', 'brickBrown', 'glassTeal', 'limeCream', 'brickRed'], fl: [14, 40], tall: 0.35 },
   { name: 'GREENLINE', j0: 18, j1: 22, pal: ['limeCream', 'brickRed', 'limeWhite', 'glassBlue', 'brickBrown'], fl: [8, 26], tall: 0.1 },
   { name: 'NORTHGATE', j0: 23, j1: 25, pal: ['brickBrown', 'brickDark', 'brickRed', 'limeCream'], fl: [4, 10], tall: 0.0 },
 ];
@@ -118,7 +118,7 @@ export class City {
           if (tall) floors = Math.round(D.fl[1] * (1.1 + R() * 0.9));
           // taller near center of spire district
           let style = D.pal[(R() * D.pal.length) | 0];
-          if (tall && R() < 0.75) style = ['glassBlue', 'glassTeal', 'glassDark'][(R() * 3) | 0];
+          if (tall && R() < 0.6) style = ['glassBlue', 'glassTeal', 'glassDark'][(R() * 3) | 0];
           const glass = style.startsWith('glass');
           const h = floors * FLOOR_H + 1.2;
           this.addBuilding(B, trim, roofProps, R, xa + 0.15, xb - 0.15, za + 0.15, zb - 0.15, h, style, glass, tall);
@@ -304,7 +304,7 @@ export class City {
     const autumn = [0xd9772b, 0xe0a32e, 0xb8421f, 0xc9612a, 0x8faa3a, 0xe8b93a, 0x6f9a3c, 0xcf5a1e];
     for (const b of this.blocks) {
       if (b.park) {
-        for (let k = 0; k < 150; k++) {
+        for (let k = 0; k < 60; k++) {
           const x = b.x0 + R() * (b.x1 - b.x0), z = b.z0 - ST_W + R() * (b.z1 - b.z0 + ST_W);
           const onPath = this.parkPath.some(([px, pz]) => Math.hypot(px - x, pz - z) < 4);
           if (onPath || Math.hypot((x - this.pond.x) / 1.4, z - this.pond.z) < 19) continue;
@@ -319,7 +319,7 @@ export class City {
         if (R() < dens) trees.push([b.x1 - 1.4, z + R() * 2, 0.6 + R() * 0.35, autumn[(R() * autumn.length) | 0]]);
       }
     }
-    const trunk = tr(new THREE.CylinderGeometry(0.14, 0.22, 3.2, 6), 0, 1.6, 0);
+    const trunk = tr(new THREE.CylinderGeometry(0.1, 0.16, 3.2, 6), 0, 1.6, 0);
     const fol = mergeGeometries([
       tr(new THREE.IcosahedronGeometry(2.0, 0), 0, 4.4, 0), tr(new THREE.IcosahedronGeometry(1.5, 0), 1.1, 3.9, 0.4),
       tr(new THREE.IcosahedronGeometry(1.5, 0), -1.0, 4.0, -0.5), tr(new THREE.IcosahedronGeometry(1.3, 0), 0.2, 5.6, -0.2),
