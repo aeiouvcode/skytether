@@ -5,6 +5,7 @@ import { CELL_X, CELL_Z, AVE_W, ST_W } from './textures.js';
 import { Traffic } from './traffic.js';
 import { Player } from './player.js';
 import { Hud } from './hud.js';
+import { Audio } from './audio.js';
 
 const Q = new URLSearchParams(location.search);
 const mobile = !Q.has('desktop') && ((matchMedia('(pointer: coarse)').matches && !matchMedia('(any-pointer: fine)').matches) || Q.has('mobile'));
@@ -61,6 +62,7 @@ const traffic = new Traffic(scene, quality);
 const player = new Player(scene, city);
 const camera = new THREE.PerspectiveCamera(68, innerWidth / innerHeight, 0.3, 4000);
 const hud = new Hud(city, traffic);
+const sfx = new Audio(); hud.sfx = sfx;
 if (Q.has('eventnow')) hud.evCool = 0.05;
 
 const cam = { yaw: 0, pitch: 0.22, dist: 5.6, pos: new THREE.Vector3(), look: new THREE.Vector3(), lastLook: 0, fov: 68 };
@@ -80,7 +82,7 @@ cam.pos.copy(player.p).add(new THREE.Vector3(-Math.sin(cam.yaw) * 7, 3, -Math.co
 // ---------- input ----------
 const inp = { mx: 0, my: 0, jump: false, swing: false, sprint: false, swingUsed: false };
 const keys = new Set();
-addEventListener('keydown', e => { keys.add(e.code); if (e.code === 'Space') { inp.jump = true; e.preventDefault(); } if (e.code === 'KeyM') hud.toggleBigMap(); });
+addEventListener('keydown', e => { keys.add(e.code); if (e.code === 'Space') { inp.jump = true; e.preventDefault(); } if (e.code === 'KeyM') hud.toggleBigMap(); if (e.code === 'KeyN') toggleMute(); });
 addEventListener('keyup', e => keys.delete(e.code));
 const cv = renderer.domElement;
 let mouseSwing = false;
@@ -129,8 +131,22 @@ let autoT = 0;
 let started = Q.has('auto') || Q.has('play');
 const title = document.getElementById('title');
 if (started) title.style.display = 'none';
-title.addEventListener('click', () => { started = true; title.style.display = 'none'; if (!mobile) cv.requestPointerLock?.(); else document.documentElement.requestFullscreen?.().catch(() => {}); });
+title.addEventListener('click', () => { sfx.start(); started = true; title.style.display = 'none'; if (!mobile) cv.requestPointerLock?.(); else document.documentElement.requestFullscreen?.().catch(() => {}); });
 document.body.classList.toggle('mobile', mobile);
+const muteBtn = document.getElementById('mute');
+function toggleMute() { sfx.start(); sfx.setMuted(!sfx.muted); muteBtn.classList.toggle('off', sfx.muted); muteBtn.setAttribute('aria-pressed', String(sfx.muted)); sfx.play('ui'); }
+muteBtn.classList.toggle('off', sfx.muted);
+muteBtn.addEventListener('click', e => { e.stopPropagation(); toggleMute(); });
+muteBtn.addEventListener('touchstart', e => { e.stopPropagation(); e.preventDefault(); toggleMute(); }, { passive: false });
+const pauseEl = document.getElementById('pause');
+let paused = false;
+document.addEventListener('pointerlockchange', () => {
+  if (mobile || !started) return;
+  paused = document.pointerLockElement !== cv; pauseEl.style.display = paused ? 'flex' : 'none';
+  if (sfx.ctx) paused ? sfx.ctx.suspend() : sfx.ctx.resume();
+});
+pauseEl.addEventListener('click', () => cv.requestPointerLock?.());
+document.addEventListener('visibilitychange', () => { if (sfx.ctx) document.hidden ? sfx.ctx.suspend() : (!paused && sfx.ctx.resume()); });
 
 addEventListener('resize', () => { camera.aspect = innerWidth / innerHeight; camera.updateProjectionMatrix(); renderer.setSize(innerWidth, innerHeight); });
 
@@ -173,6 +189,7 @@ function frame(now) {
   requestAnimationFrame(frame);
   let dt = Math.min(0.05, (now - last) / 1000); last = now;
   if (Q.has('fixed')) dt = 1 / 30;
+  if (paused) { renderer.render(scene, camera); return; }
   clock.t += dt;
   // gather input
   inp.mx = (keys.has('KeyD') || keys.has('ArrowRight') ? 1 : 0) - (keys.has('KeyA') || keys.has('ArrowLeft') ? 1 : 0) + (touch.mx || 0);
@@ -193,6 +210,8 @@ function frame(now) {
   const c = player.p.clone(); c.x = Math.round(c.x / texel) * texel; c.z = Math.round(c.z / texel) * texel;
   sun.target.position.copy(c); sun.position.copy(c).addScaledVector(SUN_DIR, 300);
   sky.position.copy(camera.position);
+  for (const ev of player.events) sfx.play(ev); player.events.length = 0;
+  sfx.update(dt, player);
   hud.update(dt, player, cam, camera, inp, fps);
   inp.noAnchor = false;
   if (!Q.has('norender')) renderer.render(scene, camera);
@@ -200,4 +219,4 @@ function frame(now) {
 }
 requestAnimationFrame(frame);
 window.__gt = () => clock.t;
-window.__game = { player, cam, city, traffic, hud, inp, renderer, scene, camera, get fps() { return fps; } };
+window.__game = { sfx, player, cam, city, traffic, hud, inp, renderer, scene, camera, get fps() { return fps; } };

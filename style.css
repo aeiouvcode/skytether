@@ -68,3 +68,9 @@ body.mobile #compass{top:6px;width:200px}
 #bigmap canvas{width:100%;height:100%}
 body:not(.mobile) .touch{display:none!important}
 body.mobile .tbtn{display:grid!important}
+
+#mute{position:fixed;top:14px;right:62px;z-index:16;background:rgba(9,16,22,.55);color:#bfeee7;border:1px solid rgba(25,224,200,.45);font:700 10px/1 system-ui;letter-spacing:.18em;padding:6px 9px;cursor:pointer}
+#mute .off{display:none}#mute.off .on{display:none}#mute.off .off{display:inline}#mute.off{color:#8a9a98;border-color:rgba(255,255,255,.2)}
+body.mobile #mute{top:auto;bottom:150px;right:auto;left:14px}
+#pause{position:fixed;inset:0;z-index:15;display:none;flex-direction:column;align-items:center;justify-content:center;background:rgba(5,9,13,.55);cursor:pointer}
+#pause .pt{font-size:40px;font-weight:900;letter-spacing:.3em}#pause .ps{margin-top:8px;font-size:12px;letter-spacing:.3em;color:#19e0c8}

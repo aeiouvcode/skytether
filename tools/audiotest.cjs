@@ -1,0 +1,20 @@
+const PORT = 9400 + Math.floor(Math.random()*300);
+const puppeteer = require('puppeteer-core'); const http=require('http'),fs=require('fs'),path=require('path');
+const root=path.join(__dirname,'..','dist');
+const srv=http.createServer((q,r)=>{let f=path.join(root,q.url.split('?')[0]);fs.readFile(f,(e,d)=>{if(e){r.writeHead(404);r.end();return;}r.writeHead(200,{'Content-Type':f.endsWith('.js')?'text/javascript':f.endsWith('.css')?'text/css':'text/html'});r.end(d);});}).listen(PORT);
+(async()=>{const b=await puppeteer.launch({executablePath:'/usr/bin/google-chrome',headless:'new',args:['--use-angle=swiftshader','--enable-unsafe-swiftshader','--no-sandbox','--autoplay-policy=no-user-gesture-required']});
+const p=await b.newPage();await p.setViewport({width:640,height:360});const logs=[];p.on('console',m=>logs.push(m.type()+': '+m.text()));p.on('pageerror',e=>logs.push('ERR '+e.message));
+await p.goto(`http://localhost:${PORT}/index.html?desktop=1&norender=1&spawn=aveair`);
+await new Promise(r=>setTimeout(r,4000));
+await p.click('#title');
+// hold swing via key E
+await p.keyboard.down('KeyW'); await p.keyboard.down('KeyE');
+await new Promise(r=>setTimeout(r,6000));
+await p.keyboard.up('KeyE'); await new Promise(r=>setTimeout(r,3000));
+const r=await p.evaluate(()=>{const g=window.__game; return {started: !!document.getElementById('title').style.display, state:g.player.state, spd:+g.player.speed().toFixed(1)};});
+const a=await p.evaluate(()=>{const s=[...document.querySelectorAll('#mute')].length;return s});
+const probe=await p.evaluate(()=>{const m=document.getElementById('mute').getBoundingClientRect();const el=document.elementFromPoint(m.x+5,m.y+5);const c=window.__game.sfx.ctx;return el.id+'/'+el.tagName+' ctx:'+(c&&c.state)+' pause:'+document.getElementById('pause').style.display;});
+console.log(JSON.stringify(r),'mute btn',a,probe);
+await p.evaluate(()=>document.getElementById('mute').click()); const t1=await p.evaluate(()=>window.__game.sfx.muted); await p.click('#mute'); console.log('js click muted', t1); await new Promise(r=>setTimeout(r,500)); const muted=await p.evaluate(()=>document.getElementById('mute').className+' muted='+window.__game.sfx.muted+' gain='+window.__game.sfx.master.gain.value);
+console.log('after click mute class:',muted);
+console.log(logs.join('\n'));await b.close();srv.close();})();

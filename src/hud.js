@@ -62,7 +62,7 @@ export class Hud {
       const i = Math.floor(x / CELL_X), j = Math.floor(z / CELL_Z);
       pos.set(i * CELL_X + AVE_W + 2, 0, j * CELL_Z + ST_W + 2 + (Math.random() * 30)); break;
     }
-    this.event = { type, pos, car, t: 0, limit: 120 };
+    this.event = { type, pos, car, t: 0, limit: 120 }; this.sfx?.play('event');
     this.evMesh.visible = true;
     this.el.ev.classList.add('on'); this.el.evName.textContent = type.name; this.el.evSub.textContent = type.sub;
     this.el.ev.classList.remove('fail', 'done');
@@ -83,7 +83,7 @@ export class Hud {
       this.lastDistrict = dn; this.el.dname.textContent = dn;
       if (!this.seen.has(dn)) {
         this.seen.add(dn);
-        this.el.bannerName.textContent = dn; this.el.banner.classList.remove('on'); void this.el.banner.offsetWidth; this.el.banner.classList.add('on'); this.bannerT = 4;
+        this.el.bannerName.textContent = dn; this.el.banner.classList.remove('on'); void this.el.banner.offsetWidth; this.el.banner.classList.add('on'); this.bannerT = 4; this.sfx?.play('district');
         if (this.seen.size > 1) { this.addXp(150); setTimeout(() => this.toast('GRID NODE SYNCED  +150 XP'), 600); }
       }
     }
@@ -110,10 +110,10 @@ export class Hud {
       const left = e.limit - e.t;
       if (dist < (e.car ? 12 : 9)) {
         const gain = e.car ? 300 : 200; this.addXp(gain);
-        this.toast(e.type.name + ' STOPPED  +' + gain + ' XP', 'good'); this.el.ev.classList.add('done');
+        this.toast(e.type.name + ' STOPPED  +' + gain + ' XP', 'good'); this.sfx?.play('win'); this.el.ev.classList.add('done');
         this.clearEvent(6);
       } else if (left <= 0) {
-        this.toast('SUSPECTS ESCAPED', 'bad'); this.el.ev.classList.add('fail'); this.clearEvent(8);
+        this.toast('SUSPECTS ESCAPED', 'bad'); this.sfx?.play('fail'); this.el.ev.classList.add('fail'); this.clearEvent(8);
       }
       // screen marker
       const sp = e.pos.clone(); sp.y += 5; sp.project(camera);
