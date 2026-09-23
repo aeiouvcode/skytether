@@ -130,8 +130,8 @@ let autoT = 0;
 
 let started = Q.has('auto') || Q.has('play');
 const title = document.getElementById('title');
-if (started) title.style.display = 'none';
-title.addEventListener('click', () => { sfx.start(); started = true; title.style.display = 'none'; if (!mobile) cv.requestPointerLock?.(); else document.documentElement.requestFullscreen?.().catch(() => {}); });
+if (started) title.style.display = 'none'; else document.body.classList.add('titling');
+title.addEventListener('click', () => { sfx.start(); started = true; document.body.classList.remove('titling'); hud.lastDistrict = null; hud.seen.clear(); hud.evCool = 4; title.style.display = 'none'; if (!mobile) cv.requestPointerLock?.(); else document.documentElement.requestFullscreen?.().catch(() => {}); });
 document.body.classList.toggle('mobile', mobile);
 const muteBtn = document.getElementById('mute');
 function toggleMute() { sfx.start(); sfx.setMuted(!sfx.muted); muteBtn.classList.toggle('off', sfx.muted); muteBtn.setAttribute('aria-pressed', String(sfx.muted)); sfx.play('ui'); }
@@ -212,7 +212,7 @@ function frame(now) {
   sky.position.copy(camera.position);
   for (const ev of player.events) sfx.play(ev); player.events.length = 0;
   sfx.update(dt, player);
-  hud.update(dt, player, cam, camera, inp, fps);
+  if (started) hud.update(dt, player, cam, camera, inp, fps);
   inp.noAnchor = false;
   if (!Q.has('norender')) renderer.render(scene, camera);
   fpsAcc += dt; fpsN++; if (fpsAcc > 0.5) { fps = fpsN / fpsAcc; fpsAcc = 0; fpsN = 0; }

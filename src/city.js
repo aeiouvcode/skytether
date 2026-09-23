@@ -95,7 +95,7 @@ export class City {
     const R = rng(1234);
     const builders = {}; const B = (k) => builders[k] || (builders[k] = new GeoBuilder());
     const trim = B('trim');
-    const roofProps = { water: [], ac: [], ant: [], vent: [] };
+    const roofProps = { water: [], ac: [], ant: [], vent: [], stair: [], sky: [] };
 
     for (let i = 0; i < NX; i++) for (let j = 0; j < NZ; j++) {
       const bx0 = i * CELL_X + AVE_W, bx1 = (i + 1) * CELL_X, bz0 = j * CELL_Z + ST_W, bz1 = (j + 1) * CELL_Z;
@@ -194,6 +194,8 @@ export class City {
     const nac = (w * d / 90) | 0;
     for (let k = 0; k < Math.min(nac, 2); k++) props.ac.push([rx0 + 1.5 + R() * (w - 3), rtop, rz0 + 1.5 + R() * (d - 3), R() * Math.PI]);
     if (R() < 0.7) props.vent.push([rx0 + 1 + R() * (w - 2), rtop, rz0 + 1 + R() * (d - 2)]);
+    if (w > 6 && d > 6 && R() < 0.75) props.stair.push([rx0 + 2 + R() * (w - 4), rtop, rz0 + 2 + R() * (d - 4), (R() * 4 | 0) * Math.PI / 2]);
+    if (!glass && w > 9 && d > 9 && R() < 0.35) props.sky.push([rx0 + 3 + R() * (w - 6), rtop, rz0 + 3 + R() * (d - 6)]);
     this.lots.push({ x0, x1, z0, z1, h: rtop });
   }
 
@@ -219,6 +221,10 @@ export class City {
     const ant = mergeGeometries([colored(tr(new THREE.CylinderGeometry(0.08, 0.25, 1, 6), 0, 0.5, 0), 0xb0b3b5), colored(tr(new THREE.SphereGeometry(0.25, 6, 4), 0, 1.02, 0), 0xd23b2b)]);
     mk(ant, P.ant, (a, p, q, s) => { p.set(a[0], a[1], a[2]); q.identity(); s.set(1, a[3], 1); });
     const vent = mergeGeometries([colored(tr(new THREE.BoxGeometry(1.4, 1.8, 1.4), 0, 0.9, 0), 0x77736d), colored(tr(new THREE.BoxGeometry(1.8, 0.2, 1.8), 0, 1.9, 0), 0x5a5652)]);
+    const stair = mergeGeometries([colored(tr(new THREE.BoxGeometry(3, 2.6, 2.4), 0, 1.3, 0), 0x8d8378), colored(tr(new THREE.BoxGeometry(3.3, 0.18, 2.7), 0, 2.69, 0), 0x5e5750), colored(tr(new THREE.BoxGeometry(0.9, 1.9, 0.06), 0.6, 0.95, 1.22), 0x3b3f44)]);
+    mk(stair, P.stair, (a, p, q, s) => { p.set(a[0], a[1], a[2]); q.setFromEuler(new THREE.Euler(0, a[3], 0)); s.setScalar(1); });
+    const sky = mergeGeometries([colored(tr(new THREE.BoxGeometry(3.2, 0.5, 2.2), 0, 0.25, 0), 0x6d6a66), colored(tr(new THREE.CylinderGeometry(1.25, 1.25, 3.2, 3, 1, false, 0, Math.PI).rotateZ(Math.PI / 2).rotateY(Math.PI / 2), 0, 0.5, 0), 0x7fa3b8)]);
+    mk(sky, P.sky, (a, p, q, s) => { p.set(a[0], a[1], a[2]); q.identity(); s.setScalar(1); });
     mk(vent, P.vent, (a, p, q, s) => { p.set(a[0], a[1], a[2]); q.identity(); s.setScalar(1); });
   }
 

@@ -58,6 +58,7 @@ function masonry(renderer, seed, base, mortar, frame, glassA, glassB, brick) {
     const k = R();
     gr.addColorStop(0, k < 0.5 ? glassA : glassB); gr.addColorStop(1, shade(glassB, 0.55 + R() * 0.3));
     g.fillStyle = gr; g.fillRect(wx, wy, ww, wh);
+    if (R() < 0.08) { g.fillStyle = 'rgba(255,214,150,0.35)'; g.fillRect(wx, wy, ww, wh); }
     if (R() < 0.35) { g.fillStyle = 'rgba(230,225,210,0.55)'; g.fillRect(wx, wy, ww, wh * (0.2 + R() * 0.6)); }
     if (R() < 0.18) { g.fillStyle = 'rgba(255,255,255,0.18)'; g.fillRect(wx, wy, ww * 0.35, wh); }
     // mullion
@@ -165,6 +166,12 @@ export function makeGroundTexture(renderer) {
   g.fillStyle = '#ecebe6';
   for (let x = 4; x < AVE_W * PPM - 4; x += 18) { g.fillRect(x, 2, 10, 32); g.fillRect(x, bz0 - 34, 10, 32); }
   for (let z = 4; z < bz0 - 4; z += 18) { g.fillRect(bx0 + 2, z, 32, 10); g.fillRect(W - 34, z, 32, 10); }
+  // road wear: tire tracks, oil stains, cracks, manhole covers
+  for (const lx of [2.5, 7.5, 12.5, 17.5]) { g.fillStyle = 'rgba(20,20,22,0.13)'; g.fillRect(lx * PPM - 12, 0, 7, H); g.fillRect(lx * PPM + 5, 0, 7, H); }
+  for (let i = 0; i < 40; i++) { g.fillStyle = 'rgba(15,15,18,' + (0.08 + R() * 0.12) + ')'; g.beginPath(); g.ellipse(R() * AVE_W * PPM, R() * H, 6 + R() * 14, 4 + R() * 9, R() * 3, 0, 6.28); g.fill(); }
+  g.strokeStyle = 'rgba(25,25,28,0.45)'; g.lineWidth = 1.2;
+  for (let i = 0; i < 26; i++) { let x = R() * W, z = R() * H; if (x > bx0 && z > bz0) continue; g.beginPath(); g.moveTo(x, z); for (let k = 0; k < 5; k++) { x += (R() - 0.5) * 40; z += (R() - 0.5) * 40; g.lineTo(x, z); } g.stroke(); }
+  for (const [mx, mz] of [[60, 250], [140, 420], [500, 70]]) { g.fillStyle = '#3a3a3c'; g.beginPath(); g.arc(mx, mz, 9, 0, 6.28); g.fill(); g.strokeStyle = '#55565a'; g.lineWidth = 1.5; for (let r = 3; r < 9; r += 3) { g.beginPath(); g.arc(mx, mz, r, 0, 6.28); g.stroke(); } }
   // stop lines
   g.fillRect(0, 38, AVE_W * PPM, 5); g.fillRect(0, bz0 - 42, AVE_W * PPM, 5);
   // intersection clean-up: box
