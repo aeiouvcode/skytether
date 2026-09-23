@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#0b1117"><meta name="apple-mobile-web-app-capable" content="yes">
+<title>SKYTETHER - Grid City</title>
+<link rel="stylesheet" href="style.css">
+</head><body>
+<div id="app"></div>
+<div id="evPanel" class="hud"><div class="ic">!</div><div><div id="evName">-</div><div id="evSub"></div></div><div id="evDist"></div></div>
+<div id="compass" class="hud"><div id="compassStrip"></div><div class="needle"></div></div>
+<div id="mapWrap" class="hud"><canvas id="minimap" width="240" height="240"></canvas><div id="dname"></div></div>
+<div id="banner" class="hud"><div class="k">DISTRICT SYNCED</div><div id="bannerName"></div><div class="bar"></div></div>
+<div id="toast" class="hud"></div>
+<div id="stats" class="hud"><div id="spd"><span id="speed">0</span><small>KM/H</small></div><div id="xpbox"><div class="l">TETHER LV <span id="lvl">1</span></div><div id="xpbar"><div id="xpFill"></div></div></div></div>
+<div id="fps" class="hud"></div>
+<div id="marker" class="hud"><div class="d"></div><span id="mdist"></span></div>
+<div id="reticle" class="hud"></div>
+<div id="noanchor" class="hud">NO ANCHOR IN RANGE</div>
+<div id="bigmap"><canvas width="600" height="900"></canvas></div>
+<div id="stick" class="touch"><div id="knob"></div></div>
+<div id="bSwing" class="tbtn touch">TETHER</div>
+<div id="bJump" class="tbtn touch">JUMP</div>
+<div id="title">
+  <h1>SKY<b>TETHER</b></h1>
+  <div class="sub">GRID CITY // OPEN WORLD</div>
+  <div class="go">TAP TO PLAY</div>
+  <div class="keys desk"><kbd>W A S D</kbd> move &nbsp; <kbd>Mouse</kbd> look &nbsp; <kbd>Hold Left Click</kbd> or <kbd>E</kbd> tether-swing<br><kbd>Space</kbd> jump / wall-kick &nbsp; <kbd>Shift</kbd> sprint &nbsp; Run into a wall to climb &nbsp; <kbd>M</kbd> map</div>
+  <div class="keys touch">Left thumb: move &nbsp; Right drag: look<br>Hold TETHER to swing, release to launch &nbsp; JUMP off walls</div>
+</div>
+<script src="game.js"></script>
+</body></html>
