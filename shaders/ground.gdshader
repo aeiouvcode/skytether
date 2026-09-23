@@ -33,6 +33,6 @@ void fragment() {
 	// darker tyre tracks
 	float lane = min(abs(dz - 3.5), abs(dx - 3.5));
 	col *= 1.0 - 0.06 * smoothstep(1.2, 0.0, abs(lane - 0.0));
-	ALBEDO = col;
+	ALBEDO = pow(col, vec3(2.2));
 	ROUGHNESS = 0.92;
 }

@@ -402,7 +402,7 @@ func _map() -> void:
 	for d in 4:
 		var fog := MeshInstance3D.new()
 		fog.mesh = U.box(Vector3(H + 12, 0.1, H + 12))
-		fog.material_override = U.unshaded(Color(0.05, 0.07, 0.1, 0.72), true)
+		fog.material_override = U.unshaded(Color(0.05, 0.07, 0.1, 0.45), true)
 		fog.layers = MAP_LAYER
 		var sx := 1.0 if d % 2 == 1 else -1.0
 		var sz := 1.0 if d >= 2 else -1.0

@@ -23,7 +23,7 @@ void fragment() {
 	float top = cust.b * 200.0;
 	if (n.y > 0.5) {
 		float g = hash(floor(wpos.xz * 1.5));
-		ALBEDO = vec3(0.40, 0.395, 0.39) * (0.85 + 0.15 * g);
+		ALBEDO = pow(vec3(0.40, 0.395, 0.39) * (0.85 + 0.15 * g), vec3(2.2));
 		ROUGHNESS = 0.95;
 	} else {
 		float u = abs(n.x) > 0.5 ? wpos.z : wpos.x;
@@ -68,7 +68,7 @@ void fragment() {
 			metal = 0.0;
 		}
 		col *= mix(0.72, 1.0, clamp(y / 8.0, 0.0, 1.0));
-		ALBEDO = col;
+		ALBEDO = pow(col, vec3(2.2));
 		ROUGHNESS = rough;
 		METALLIC = metal;
 	}

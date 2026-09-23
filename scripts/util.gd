@@ -12,6 +12,7 @@ static func vmat(rough := 0.8) -> StandardMaterial3D:
 	# albedo comes from per-instance MultiMesh colour
 	var m := StandardMaterial3D.new()
 	m.vertex_color_use_as_albedo = true
+	m.vertex_color_is_srgb = true
 	m.roughness = rough
 	return m
 

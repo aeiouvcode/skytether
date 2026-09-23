@@ -142,7 +142,7 @@ func _try_attach(from_ground: bool) -> bool:
 	var best_score := -1e9
 	var best_side := 0
 	for side in [-1, 1]:
-		for yaw_off in [12.0, 28.0, 45.0]:
+		for yaw_off in [10.0, 22.0, 38.0]:
 			for elev in [42.0, 56.0, 70.0]:
 				var d := f.rotated(Vector3.UP, deg_to_rad(yaw_off) * side)
 				var e := deg_to_rad(elev)

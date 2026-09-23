@@ -32,5 +32,5 @@ void sky() {
 		vec3 cloud = mix(vec3(0.82, 0.86, 0.92), vec3(1.0), smoothstep(0.5, 0.9, fbm(uv * 2.0 + 1.3)));
 		col = mix(col, cloud, c * 0.92);
 	}
-	COLOR = col;
+	COLOR = pow(col, vec3(2.2));
 }

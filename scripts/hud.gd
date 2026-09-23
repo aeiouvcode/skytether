@@ -59,7 +59,7 @@ func build(world: World3D) -> void:
 	obj_card.position = Vector2(16, 16)
 	var v := VBoxContainer.new()
 	v.add_theme_constant_override("separation", 0)
-	obj_title = _label("◆  NO ACTIVE CRIME", 17, Color.WHITE)
+	obj_title = _label("// NO ACTIVE CRIME", 17, Color.WHITE)
 	obj_sub = _label("Patrol the city", 13, Color(0.75, 0.82, 0.88))
 	v.add_child(obj_title)
 	v.add_child(obj_sub)
@@ -206,4 +206,4 @@ func update(dt: float, player_pos: Vector3, yaw: float) -> void:
 	var deg := fposmod(-rad_to_deg(yaw), 360.0)
 	var names := ["N", "NE", "E", "SE", "S", "SW", "W", "NW"]
 	var i := int(round(deg / 45.0)) % 8
-	compass.text = "‹ %s ›   %03d°" % [names[i], int(deg)]
+	compass.text = "< %s >   %03d°" % [names[i], int(deg)]

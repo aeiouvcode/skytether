@@ -31,6 +31,7 @@ func _ready() -> void:
 	rng.randomize()
 	var args := OS.get_cmdline_user_args()
 	demo = "--demo" in args
+	touch_mode = "--touch" in args
 	if OS.has_feature("web"):
 		var q = JavaScriptBridge.eval("window.location.search", true)
 		if typeof(q) == TYPE_STRING:
@@ -73,6 +74,10 @@ func _resized() -> void:
 	var logical := real / s
 	hud.layout(logical)
 	hud.set_touch_mode(touch_mode, logical)
+	if pad:
+		pad.position = Vector2.ZERO
+		pad.size = logical
+		pad.queue_redraw()
 
 func _inputs() -> void:
 	var keys := {"fwd": [KEY_W, KEY_UP], "back": [KEY_S, KEY_DOWN], "left": [KEY_A, KEY_LEFT],
@@ -99,10 +104,10 @@ func _environment() -> void:
 	sky.radiance_size = Sky.RADIANCE_SIZE_64
 	env.sky = sky
 	env.ambient_light_source = Environment.AMBIENT_SOURCE_SKY
-	env.ambient_light_energy = 0.85
+	env.ambient_light_energy = 0.6
 	env.reflected_light_source = Environment.REFLECTION_SOURCE_SKY
 	env.tonemap_mode = Environment.TONE_MAPPER_FILMIC
-	env.tonemap_exposure = 1.05
+	env.tonemap_exposure = 1.0
 	env.fog_enabled = true
 	env.fog_light_color = Color(0.74, 0.82, 0.9)
 	env.fog_density = 0.0021
@@ -198,8 +203,18 @@ func _autopilot(dt: float) -> void:
 	demo_t += dt
 	hero.cam_yaw = yaw
 	hero.sprint = true
-	hero.input_dir = Vector2(0, 1)
 	var p := hero.global_position
+	# steer back to the centre of the avenue we are travelling along
+	var f := Vector3(-sin(yaw), 0, -cos(yaw))
+	var r := Vector3(cos(yaw), 0, -sin(yaw))
+	var e := Vector3.ZERO
+	if abs(f.z) > abs(f.x):
+		e.x = p.x - (round((p.x + city.H) / City.P) * City.P - city.H)
+	else:
+		e.z = p.z - (round((p.z + city.H) / City.P) * City.P - city.H)
+	hero.input_dir = Vector2(clamp(-e.dot(r) / 5.0, -1.0, 1.0), 1.0)
+	if hero.st == Hero.St.WALL:
+		hero.jump_pressed = true
 	if abs(p.x) > city.H - 60 or abs(p.z) > city.H - 60:
 		var to_c := -Vector2(p.x, p.z).normalized()
 		var target_yaw := atan2(-to_c.x, -to_c.y)
@@ -240,7 +255,7 @@ func _crimes(dt: float) -> void:
 		crime_wait -= dt
 		if crime_wait <= 0.0:
 			_spawn_crime()
-		hud.obj_title.text = "◆  PATROL"
+		hud.obj_title.text = "// PATROL"
 		hud.obj_sub.text = "Scanning police band…"
 		return
 	var pos: Vector3 = crime.pos
@@ -252,7 +267,7 @@ func _crimes(dt: float) -> void:
 	crime.map.global_position = Vector3(pos.x, -95, pos.z)
 	var hp := hero.global_position
 	var dist := Vector2(hp.x - pos.x, hp.z - pos.z).length()
-	hud.obj_title.text = "◆  %s" % crime.name
+	hud.obj_title.text = "// %s" % crime.name
 	hud.obj_sub.text = "%s · %d m" % [crime.sub, int(dist)]
 	if dist < 7.0 and hp.y < pos.y + 7.0:
 		if crime.car >= 0:

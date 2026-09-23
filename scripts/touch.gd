@@ -16,7 +16,6 @@ var swing_id := -1
 var font: Font
 
 func _ready() -> void:
-	set_anchors_preset(Control.PRESET_FULL_RECT)
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
 	font = ThemeDB.fallback_font
 
@@ -104,3 +103,11 @@ func _draw() -> void:
 	draw_arc(base, 62, 0, TAU, 40, Color(1, 1, 1, 0.5), 2.0, true)
 	var knob := base + Vector2(move.x, -move.y) * 60.0
 	draw_circle(knob, 26, Color(1, 1, 1, 0.55))
+
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_RESIZED:
+		queue_redraw()
+
+func _process(_dt: float) -> void:
+	if Engine.get_process_frames() % 10 == 0:
+		queue_redraw()
