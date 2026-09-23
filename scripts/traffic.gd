@@ -95,8 +95,16 @@ func car_pos(i: int) -> Vector3:
 func _process(dt: float) -> void:
 	t += dt
 	var span := city.H * 2.0
+	# signal phase: streets along x go for 9 s, then streets along z (1 s all-red between)
+	var ph := fmod(t, 20.0)
+	var green_axis := 0 if ph < 9.0 else (1 if ph >= 10.0 and ph < 19.0 else -1)
 	for e in cars:
-		if not e.stopped:
+		var hold := false
+		if e.lane[0] != green_axis:
+			var rel: float = fposmod(e.s + city.H, City.P) if e.dir > 0 else fposmod(-(e.s + city.H), City.P)
+			var ahead: float = City.P - rel
+			hold = ahead > 9.5 and ahead < 13.0
+		if not e.stopped and not hold:
 			e.s += e.v * e.dir * dt
 			if e.s > city.H:
 				e.s -= span

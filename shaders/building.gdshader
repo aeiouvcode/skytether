@@ -47,6 +47,9 @@ void fragment() {
 		vec3 glass = mix(vec3(0.13, 0.18, 0.25), vec3(0.50, 0.63, 0.76), 0.25 + 0.45 * h * h + 0.25 * sky);
 		if (style == 3) glass = mix(vec3(0.2, 0.3, 0.38), vec3(0.55, 0.7, 0.82), 0.3 + 0.4 * h * 0.5 + 0.3 * sky);
 		if (h > 0.94) glass = vec3(0.78, 0.7, 0.52);
+		float fw = max(fwidth(cell.x), fwidth(cell.y));
+		float cover = (style == 3) ? 0.83 : 0.29;
+		win = mix(win, cover, smoothstep(0.25, 0.7, fw));
 		vec3 col = mix(wall, glass, win);
 		float rough = mix(0.88, 0.12, win);
 		float metal = mix(0.0, 0.25, win);

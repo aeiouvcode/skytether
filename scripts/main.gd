@@ -22,6 +22,9 @@ var crimes_stopped := 0
 var synced := [false, false, false, false]
 var cur_district := -1
 var rng := RandomNumberGenerator.new()
+var synth: Synth
+var started := false
+var step_phase := 0.0
 var marker_mat := U.emissive(Color(1.0, 0.18, 0.2), 2.5)
 var beam_mat := U.unshaded(Color(1.0, 0.2, 0.2, 0.22), true)
 const CRIME_NAMES := [["STREET THEFT", "Bag snatch in progress"], ["MUGGING", "Civilian cornered"],
@@ -33,8 +36,10 @@ func _ready() -> void:
 	demo = "--demo" in args
 	touch_mode = "--touch" in args
 	if OS.has_feature("web"):
-		var q = JavaScriptBridge.eval("window.location.search", true)
-		if typeof(q) == TYPE_STRING:
+		# read the query string without eval, so the strict CSP (no unsafe-eval) holds
+		var loc = JavaScriptBridge.get_interface("location")
+		var q = str(loc.search) if loc != null else ""
+		if q != "":
 			demo = demo or q.find("demo=1") != -1
 			touch_mode = q.find("touch=1") != -1
 	touch_mode = touch_mode or DisplayServer.is_touchscreen_available()
@@ -49,6 +54,9 @@ func _ready() -> void:
 	hero = Hero.new()
 	add_child(hero)
 	hero.landed.connect(_on_landed)
+	synth = Synth.new()
+	add_child(synth)
+	hero.web_fired.connect(synth.web)
 	var start := Vector3(city.line(4), 0.3, city.line(6) - 20.0)
 	if demo:
 		start = Vector3(city.line(4), 26.0, city.line(8) - 30.0)
@@ -64,6 +72,8 @@ func _ready() -> void:
 		hud.add_child(pad)
 		get_viewport().scaling_3d_scale = 0.75
 	get_viewport().size_changed.connect(_resized)
+	started = demo
+	hud.set_start_prompt(not started, touch_mode)
 	_resized()
 
 func _resized() -> void:
@@ -146,6 +156,15 @@ func _camera() -> void:
 	arm.add_child(cam)
 	cam.current = true
 
+func _input(ev: InputEvent) -> void:
+	if started:
+		return
+	if (ev is InputEventMouseButton or ev is InputEventScreenTouch or ev is InputEventKey) and ev.is_pressed():
+		started = true
+		hud.set_start_prompt(false, touch_mode)
+		synth.chime()
+		get_viewport().set_input_as_handled()
+
 func _unhandled_input(ev: InputEvent) -> void:
 	if touch_mode or demo:
 		return
@@ -168,6 +187,12 @@ func _process(dt: float) -> void:
 	_districts()
 	var hv := Vector3(hero.velocity.x, 0, hero.velocity.z)
 	hud.update(dt, hero.global_position, yaw)
+	synth.speed = hero.velocity.length()
+	if hero.st == Hero.St.GROUND and hv.length() > 1.5:
+		var ph := hero.model.phase / PI
+		if floor(ph) != floor(step_phase):
+			synth.step()
+		step_phase = ph
 	hud.status.text = "DISTRICTS %d/4    CRIMES STOPPED %d\n%d km/h" % [synced.count(true), crimes_stopped, int(hero.velocity.length() * 3.6)]
 
 func _read_input(dt: float) -> void:
@@ -177,6 +202,10 @@ func _read_input(dt: float) -> void:
 	var sprint := false
 	if demo:
 		_autopilot(dt)
+		return
+	if not started:
+		hero.input_dir = Vector2.ZERO
+		hero.swing_held = false
 		return
 	if touch_mode and pad:
 		mv = pad.move
@@ -246,6 +275,7 @@ func _update_camera(dt: float) -> void:
 	cam.fov = lerp(cam.fov, 70.0 + clamp(speed / 45.0, 0.0, 1.0) * 16.0, dt * 3.0)
 
 func _on_landed(v: float) -> void:
+	synth.thud(v)
 	if v > 22.0:
 		hud.toast("Hard landing", Color(0.8, 0.85, 0.9))
 
@@ -273,6 +303,7 @@ func _crimes(dt: float) -> void:
 		if crime.car >= 0:
 			traffic.cars[crime.car].stopped = true
 		crimes_stopped += 1
+		synth.chime(true)
 		hud.toast("CRIME STOPPED  ·  %s  ·  +150 XP" % crime.name, Color(1.0, 0.72, 0.3))
 		crime.node.queue_free()
 		crime.map.queue_free()
@@ -323,6 +354,7 @@ func _spawn_crime() -> void:
 	mk.layers = City.MAP_LAYER
 	add_child(mk)
 	crime = {"pos": pos, "car": car, "name": CRIME_NAMES[kind][0], "sub": CRIME_NAMES[kind][1], "node": node, "map": mk}
+	synth.alert()
 	hud.toast("NEW CRIME  ·  %s" % CRIME_NAMES[kind][0], Color(1.0, 0.45, 0.45))
 
 # ---------------- districts ----------------
@@ -342,6 +374,7 @@ func _districts() -> void:
 		var bp: Vector3 = b.pos
 		if Vector2(p.x - bp.x, p.z - bp.z).length() < 16.0 and p.y > bp.y - 3.0:
 			synced[di] = true
+			synth.chime()
 			hud.show_banner("DISTRICT SYNCED", City.DISTRICTS[di])
 			hud.toast("FAST TRAVEL POINT UNLOCKED  ·  %s" % City.DISTRICTS[di], Color(1.0, 0.72, 0.3))
 			city.district_fog[di].visible = false

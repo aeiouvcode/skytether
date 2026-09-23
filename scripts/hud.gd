@@ -21,6 +21,8 @@ var arrow: Polygon2D
 var hint: Label
 var title: Label
 var title_t := 4.0
+var prompt: Label
+var waiting := false
 var amber := Color(1.0, 0.64, 0.18)
 
 func _style(bg: Color, border_left := 0, radius := 4) -> StyleBoxFlat:
@@ -146,6 +148,13 @@ func build(world: World3D) -> void:
 	title.offset_top = -60
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	root.add_child(title)
+	prompt = _label("CLICK TO PLAY", 20, amber, 6)
+	prompt.set_anchors_preset(Control.PRESET_CENTER)
+	prompt.offset_left = -300
+	prompt.offset_right = 300
+	prompt.offset_top = 36
+	prompt.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	root.add_child(prompt)
 
 func layout(size: Vector2) -> void:
 	var w: float = clamp(size.x * 0.24, 150.0, 260.0)
@@ -178,6 +187,13 @@ func set_touch_mode(on: bool, size: Vector2) -> void:
 		compass.size = Vector2(w, 20)
 		status.offset_top = 12
 
+func set_start_prompt(on: bool, touch: bool) -> void:
+	waiting = on
+	prompt.text = "TAP TO PLAY" if touch else "CLICK TO PLAY"
+	prompt.visible = on
+	if not on:
+		title_t = min(title_t, 1.5)
+
 func toast(txt: String, col := Color.WHITE) -> void:
 	var p := PanelContainer.new()
 	p.add_theme_stylebox_override("panel", _style(Color(0.04, 0.06, 0.09, 0.72), 3))
@@ -199,6 +215,9 @@ func update(dt: float, player_pos: Vector3, yaw: float) -> void:
 	map_cam.rotation = Vector3(-PI / 2, yaw, 0)
 	banner_t -= dt
 	banner.modulate.a = clamp(banner_t, 0.0, 1.0)
+	if waiting:
+		title_t = 4.0
+		prompt.modulate.a = 0.55 + 0.45 * sin(Time.get_ticks_msec() * 0.004)
 	title_t -= dt
 	title.modulate.a = clamp(title_t, 0.0, 1.0)
 	title.visible = title_t > 0.0

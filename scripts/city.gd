@@ -378,7 +378,7 @@ func _map() -> void:
 	var rp := PlaneMesh.new()
 	rp.size = Vector2(N * P + S, N * P + S)
 	roads.mesh = rp
-	roads.material_override = U.unshaded(Color(0.86, 0.92, 0.95))
+	roads.material_override = U.unshaded(Color(0.93, 0.96, 1.0))
 	roads.layers = MAP_LAYER
 	roads.position.y = -99.5
 	add_child(roads)
@@ -390,7 +390,7 @@ func _map() -> void:
 	for i in N:
 		for j in N:
 			var r := block_rect(i, j)
-			var col := Color(0.23, 0.42, 0.62)
+			var col := Color(0.16, 0.27, 0.4)
 			if _is_park(i, j):
 				r = park_rect if j == park_block.y else Rect2()
 				col = Color(0.3, 0.6, 0.32)
@@ -402,7 +402,7 @@ func _map() -> void:
 	for d in 4:
 		var fog := MeshInstance3D.new()
 		fog.mesh = U.box(Vector3(H + 12, 0.1, H + 12))
-		fog.material_override = U.unshaded(Color(0.05, 0.07, 0.1, 0.45), true)
+		fog.material_override = U.unshaded(Color(0.03, 0.05, 0.08, 0.3), true)
 		fog.layers = MAP_LAYER
 		var sx := 1.0 if d % 2 == 1 else -1.0
 		var sz := 1.0 if d >= 2 else -1.0

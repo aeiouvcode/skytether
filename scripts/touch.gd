@@ -24,7 +24,7 @@ func _btn() -> Dictionary:
 	var r: float = clamp(min(s.x, s.y) * 0.11, 40.0, 70.0)
 	return {
 		"swing": [Vector2(s.x - r * 1.5, s.y - r * 1.9), r * 1.15],
-		"jump": [Vector2(s.x - r * 3.6, s.y - r * 1.0), r * 0.8],
+		"jump": [Vector2(s.x - r * 3.5, s.y - r * 1.55), r * 0.8],
 		"sprint": [Vector2(s.x - r * 1.2, s.y - r * 4.2), r * 0.65],
 	}
 

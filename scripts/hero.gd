@@ -11,6 +11,7 @@ const SPRINT := 17.0
 const MAX_SPEED := 52.0
 
 signal landed(speed: float)
+signal web_fired
 
 var st := St.AIR
 var cam_yaw := 0.0
@@ -173,6 +174,7 @@ func _try_attach(from_ground: bool) -> bool:
 	st = St.SWING
 	rope_show = 0.0
 	swings += 1
+	web_fired.emit()
 	# attach kick: pull forward so a standing start becomes a swing
 	var boost := f * (7.0 if hv.length() < 20.0 else 2.5)
 	if from_ground:

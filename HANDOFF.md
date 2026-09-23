@@ -18,10 +18,18 @@ Everything is generated in code from `main.tscn` -> `scripts/main.gd`.
 - Frames: `xvfb-run Godot --rendering-driver opengl3 --write-movie out.avi --fixed-fps 30 --quit-after 330 --resolution 1280x720 -- --demo`
 - Web: `Godot --headless --export-release Web export/index.html`
 
+## Cycle 2 (sound, logic, UI, security)
+- `scripts/synth.gd`: all audio synthesized in code (AudioStreamGenerator, 22.05 kHz): speed wind, web launch, landing thud, footsteps, chimes for crime stopped / district synced, soft alert for new crime. Output lowpassed and soft-clipped. Measured on a 10 s demo recording: mean -36.9 dB, peak -15.3 dB.
+- Title gate: "TAP/CLICK TO PLAY" (also unlocks browser audio). Demo mode skips it.
+- Traffic signals: streets along x and z alternate (9 s green, 1 s all-red); cars hold before the crossing.
+- Minimap: lighter roads, darker blocks, lighter district fog.
+- Facade shader fades the window grid to its average where it would alias (distant shimmer).
+- JUMP button raised at phone sizes.
+- `build.sh`: web export plus strict CSP (no unsafe-eval, no network). Query string read via JavaScriptBridge.get_interface, not eval.
+
 ## Honest gaps (cycle 1)
 - Tether is a scripted pendulum constraint on the CharacterBody3D, not a PinJoint3D (PinJoint needs RigidBody).
-- No car/pedestrian collision; cars pass through each other at intersections (no signals).
-- Facades read flatter and greyer than the reference; far window grids alias.
-- Minimap road contrast is weak.
+- No car/pedestrian collision with the hero. Cars in the same lane can still overlap (no car-following).
+- Facades read flatter and greyer than the reference.
 - Crime resolution = reach the marker (no combat). District sync = reach the rooftop beacon.
 - Phone frame rate not measured on a real device.
